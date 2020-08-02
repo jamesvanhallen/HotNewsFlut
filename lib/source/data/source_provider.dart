@@ -5,8 +5,9 @@ import 'package:hot_news/source/data/source.dart';
 import 'package:http/http.dart' as http;
 
 class SourceProvider {
-  Future<List<Source>> fetchAlbum() async {
-    final response = await http.get(kEndpoint);
+  Future<List<Source>> fetchSources() async {
+    var uri = Uri.https(kEndpoint, kEndpointSources);
+    final response = await http.get(uri);
 
     if (response.statusCode == kCode200) {
       // If the server did return a 200 OK response,
@@ -19,7 +20,7 @@ class SourceProvider {
     } else {
       // If the server did not return a 200 OK response,
       // then throw an exception.
-      throw Exception('Failed to load album');
+      throw Exception('Failed to load sources');
     }
   }
 }

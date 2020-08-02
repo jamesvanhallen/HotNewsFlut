@@ -1,18 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hot_news/article/data/article.dart';
 import 'package:hot_news/constants/constants.dart';
-import 'package:hot_news/source/data/source.dart';
+import 'package:intl/intl.dart';
 
-class SourceItem extends StatefulWidget {
-  final Source _source;
+class ArticleItem extends StatefulWidget {
+  final Article _article;
 
-  SourceItem(this._source);
+  ArticleItem(this._article);
 
   @override
   _SourceItemState createState() => _SourceItemState();
 }
 
-class _SourceItemState extends State<SourceItem> {
+class _SourceItemState extends State<ArticleItem> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -21,11 +22,11 @@ class _SourceItemState extends State<SourceItem> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Container(
-            margin: EdgeInsets.only(left: 16.0, right: 16.0, top: 8.00),
-            child: Icon(
-              Icons.book,
-              color: Colors.black,
-              size: 30.0,
+            width: 100.0,
+            height: 50.0,
+            margin: EdgeInsets.only(left: 8.0, right: 8.0, top: 8.00),
+            child: Image.network(
+              widget._article.urlToImage,
             ),
           ),
           Expanded(
@@ -35,22 +36,34 @@ class _SourceItemState extends State<SourceItem> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
-                    widget._source.name,
+                    getDate(),
+                    style: kSourceItemTextStyle,
+                  ),
+                  SizedBox(
+                    height: 4.0,
+                  ),
+                  Text(
+                    widget._article.title,
                     style: kSourceItemMainTextStyle,
                   ),
                   SizedBox(
                     height: 4.0,
                   ),
                   Text(
-                    widget._source.description,
+                    widget._article.description,
                     style: kSourceItemTextStyle,
                   ),
                 ],
               ),
             ),
-          ),
+          )
         ],
       ),
     );
+  }
+
+  String getDate() {
+    var date = DateTime.parse(widget._article.publishedAt);
+    return new DateFormat(kArticleDateFormat).format(date);
   }
 }

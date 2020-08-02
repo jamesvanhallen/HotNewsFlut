@@ -13,4 +13,15 @@ const TextStyle kSourceItemMainTextStyle = TextStyle(
 
 // api
 const int kCode200 = 200;
-const String kEndpoint = 'https://newsapi.org/v1/sources';
+const String kEndpoint = 'newsapi.org';
+const String kEndpointSources = 'v1/sources';
+const String kEndpointArticles = 'v1/articles';
+const String kApiKey = 'af9119b9bba144bea68666d1f0552797';
+
+// colors
+const toolbarColor = Color(0xff6D4C41);
+
+// date
+const kArticleDateFormat = 'yyyy-MM-dd – kk:mm';
+
+
