@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hot_news/constants/constants.dart';
 import 'package:hot_news/source/data/source.dart';
 import 'package:hot_news/source/data/source_provider.dart';
@@ -12,7 +13,8 @@ class SourceScreen extends StatefulWidget {
 
 class _SourceScreenState extends State<SourceScreen> {
   final sourceProvider = SourceProvider();
-  final List<Source> items = List();
+  final List<Source> _items = List();
+  bool _loading = true;
 
   @override
   void didChangeDependencies() {
@@ -23,9 +25,10 @@ class _SourceScreenState extends State<SourceScreen> {
 
   void getData() async {
     var data = await sourceProvider.fetchSources();
-    items.clear();
+    _items.clear();
     setState(() {
-      items.addAll(data);
+      _items.addAll(data);
+      _loading = false;
     });
   }
 
@@ -37,20 +40,25 @@ class _SourceScreenState extends State<SourceScreen> {
         backgroundColor: toolbarColor,
       ),
       body: SafeArea(
-        child: ListView.builder(
+        child: _loading ?
+        SpinKitThreeBounce(
+          color: toolbarColor,
+          size: 30,
+        ) :
+        ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
-          itemCount: items.length,
+          itemCount: _items.length,
           itemBuilder: (context, index) {
             return GestureDetector(
               child: SourceItem(
-                items[index],
+                _items[index],
               ),
               onTap: () => {
                 Navigator.pushNamed(
                   context,
                   '/articles',
-                  arguments: items[index],
+                  arguments: _items[index],
                 ),
               },
             );

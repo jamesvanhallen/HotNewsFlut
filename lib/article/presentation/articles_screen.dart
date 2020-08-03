@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hot_news/article/data/article.dart';
 import 'package:hot_news/article/data/article_provider.dart';
 import 'package:hot_news/article/presentation/article_item.dart';
@@ -12,8 +13,9 @@ class ArticleScreen extends StatefulWidget {
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
-  final List<Article> items = List();
+  final List<Article> _items = List();
   final ArticleProvider articleProvider = ArticleProvider();
+  bool _loading = true;
 
   Source _source;
 
@@ -31,9 +33,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
       kApiKey,
       source.sortBysAvailable[0],
     );
-    items.clear();
+    _items.clear();
     setState(() {
-      items.addAll(data);
+      _items.addAll(data);
+      _loading = false;
     });
   }
 
@@ -45,18 +48,22 @@ class _ArticleScreenState extends State<ArticleScreen> {
         backgroundColor: toolbarColor,
       ),
       body: SafeArea(
-        child: ListView.builder(
+        child: _loading ?
+        SpinKitThreeBounce(
+          color: toolbarColor,
+          size: 30,
+        ) : ListView.builder(
           scrollDirection: Axis.vertical,
           shrinkWrap: true,
-          itemCount: items.length,
+          itemCount: _items.length,
           itemBuilder: (context, index) {
             return GestureDetector(
-              child: ArticleItem(items[index]),
+              child: ArticleItem(_items[index]),
               onTap: () => {
                 Navigator.pushNamed(
                   context,
                   '/articleWeb',
-                  arguments: items[index],
+                  arguments: _items[index],
                 ),
               },
             );

@@ -5,6 +5,7 @@ import 'package:hot_news/constants/constants.dart';
 import 'package:http/http.dart' as http;
 
 class ArticleProvider {
+
   Future<List<Article>> fetchArticles(
     String source,
     String apiKey,
