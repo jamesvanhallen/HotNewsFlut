@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hot_news/constants/constants.dart';
-import 'package:hot_news/mani_navigator.dart';
+import 'package:hot_news/main_navigator.dart';
 import 'package:hot_news/source/data/source.dart';
 import 'package:hot_news/source/data/source_provider.dart';
 import 'package:hot_news/source/presentation/source_item.dart';

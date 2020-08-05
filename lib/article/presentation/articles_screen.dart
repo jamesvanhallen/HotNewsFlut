@@ -5,7 +5,7 @@ import 'package:hot_news/article/data/article.dart';
 import 'package:hot_news/article/data/article_provider.dart';
 import 'package:hot_news/article/presentation/article_item.dart';
 import 'package:hot_news/constants/constants.dart';
-import 'package:hot_news/mani_navigator.dart';
+import 'package:hot_news/main_navigator.dart';
 import 'package:hot_news/source/data/source.dart';
 
 class ArticleScreen extends StatefulWidget {

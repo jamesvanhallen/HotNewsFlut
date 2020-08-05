@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hot_news/mani_navigator.dart';
+import 'package:hot_news/main_navigator.dart';
 
 void main() {
   runApp(MyApp());
