@@ -13,70 +13,60 @@ class SourceScreen extends StatefulWidget {
 }
 
 class _SourceScreenState extends State<SourceScreen> {
-  final GlobalKey<ScaffoldState> _sourceScaffoldKey =
-      new GlobalKey<ScaffoldState>();
   final sourceProvider = SourceProvider();
-  final List<Source> _items = List();
-  bool _loading = true;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-
-    getData();
-  }
-
-  void getData() async {
-    _items.clear();
-    try {
-      var data = await sourceProvider.fetchSources();
-      setState(() {
-        _items.addAll(data);
-      });
-    } catch (e) {
-      _sourceScaffoldKey.currentState
-          .showSnackBar(new SnackBar(content: new Text(e.toString())));
-    } finally {
-      setState(() {
-        _loading = false;
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _sourceScaffoldKey,
       appBar: AppBar(
         title: Text('Hot News'),
         backgroundColor: toolbarColor,
       ),
       body: SafeArea(
-        child: _loading
-            ? SpinKitThreeBounce(
-                color: toolbarColor,
-                size: 30,
-              )
-            : ListView.builder(
-                scrollDirection: Axis.vertical,
-                shrinkWrap: true,
-                itemCount: _items.length,
-                itemBuilder: (context, index) {
-                  return GestureDetector(
-                    child: SourceItem(
-                      _items[index],
-                    ),
-                    onTap: () => {
-                      Navigator.pushNamed(
-                        context,
-                        kRouteArticles,
-                        arguments: _items[index],
-                      ),
-                    },
-                  );
-                },
-              ),
+        child: FutureBuilder<List<Source>>(
+          future: sourceProvider.fetchSources(),
+          builder:
+              (BuildContext context, AsyncSnapshot<List<Source>> snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: SpinKitThreeBounce(
+                  color: toolbarColor,
+                  size: 30,
+                ),
+              );
+            }
+            if (snapshot.data.isEmpty) {
+              return Center(
+                child: Text('data is empty'),
+              );
+            } else {
+              return displayItems(snapshot.data);
+            }
+          },
+        ),
       ),
+    );
+  }
+
+  Widget displayItems(List<Source> sources) {
+    return ListView.builder(
+      scrollDirection: Axis.vertical,
+      shrinkWrap: true,
+      itemCount: sources.length,
+      itemBuilder: (context, index) {
+        return GestureDetector(
+          child: SourceItem(
+            sources[index],
+          ),
+          onTap: () => {
+            Navigator.pushNamed(
+              context,
+              kRouteArticles,
+              arguments: sources[index],
+            ),
+          },
+        );
+      },
     );
   }
 }
