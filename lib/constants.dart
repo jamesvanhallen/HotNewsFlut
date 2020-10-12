@@ -12,10 +12,7 @@ const TextStyle kSourceItemMainTextStyle = TextStyle(
 );
 
 // api
-const int kCode200 = 200;
-const String kEndpoint = 'newsapi.org';
-const String kEndpointSources = 'v1/sources';
-const String kEndpointArticles = 'v1/articles';
+const String kEndpoint = 'https://newsapi.org/v1';
 const String kApiKey = 'af9119b9bba144bea68666d1f0552797';
 
 // colors

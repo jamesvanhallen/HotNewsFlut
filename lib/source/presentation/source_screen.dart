@@ -1,11 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:hot_news/constants/constants.dart';
-import 'package:hot_news/main_navigator.dart';
+import 'package:hot_news/constants.dart';
 import 'package:hot_news/source/data/source.dart';
-import 'package:hot_news/source/data/source_provider.dart';
+import 'package:hot_news/source/presentation/bloc/source_bloc.dart';
+import 'package:hot_news/source/presentation/bloc/source_bloc_state.dart';
 import 'package:hot_news/source/presentation/source_item.dart';
+
+import 'bloc/source_bloc_event.dart';
 
 class SourceScreen extends StatefulWidget {
   @override
@@ -13,8 +16,6 @@ class SourceScreen extends StatefulWidget {
 }
 
 class _SourceScreenState extends State<SourceScreen> {
-  final sourceProvider = SourceProvider();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,26 +24,27 @@ class _SourceScreenState extends State<SourceScreen> {
         backgroundColor: toolbarColor,
       ),
       body: SafeArea(
-        child: FutureBuilder<List<Source>>(
-          future: sourceProvider.fetchSources(),
-          builder:
-              (BuildContext context, AsyncSnapshot<List<Source>> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: SpinKitThreeBounce(
-                  color: toolbarColor,
-                  size: 30,
-                ),
-              );
-            }
-            if (snapshot.data.isEmpty) {
-              return Center(
-                child: Text('data is empty'),
-              );
-            } else {
-              return displayItems(snapshot.data);
-            }
-          },
+        child: BlocProvider(
+          create: (_) => SourceBloc()..add(SourceRequestListEvent()),
+          child: BlocBuilder<SourceBloc, SourceState>(
+            builder: (context, state) {
+              if (state is SourceListSuccessState) {
+                return displayItems(state.sources);
+              }
+              if (state is SourceListFailureState) {
+                return Center(
+                  child: Text(state.errorMessage),
+                );
+              } else {
+                return Center(
+                  child: SpinKitThreeBounce(
+                    color: toolbarColor,
+                    size: 30,
+                  ),
+                );
+              }
+            },
+          ),
         ),
       ),
     );
@@ -59,11 +61,7 @@ class _SourceScreenState extends State<SourceScreen> {
             sources[index],
           ),
           onTap: () => {
-            Navigator.pushNamed(
-              context,
-              kRouteArticles,
-              arguments: sources[index],
-            ),
+            context.bloc<SourceBloc>().add(SourceChosenEvent(sources[index])),
           },
         );
       },

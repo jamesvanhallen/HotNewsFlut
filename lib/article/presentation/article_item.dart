@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hot_news/article/data/article.dart';
-import 'package:hot_news/constants/constants.dart';
+import 'package:hot_news/constants.dart';
 import 'package:intl/intl.dart';
 
 class ArticleItem extends StatelessWidget {

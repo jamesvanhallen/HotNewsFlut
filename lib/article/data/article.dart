@@ -1,3 +1,8 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'article.g.dart';
+
+@JsonSerializable(nullable: false)
 class Article {
   final String title;
   final String description;
@@ -8,13 +13,10 @@ class Article {
   Article(this.title, this.description, this.urlToImage, this.publishedAt,
       this.url);
 
-  factory Article.fromJson(Map<String, dynamic> json) {
-    return Article(
-      json['title'],
-      json['description'],
-      json['urlToImage'],
-      json['publishedAt'],
-      json['url'],
-    );
-  }
+  static const fromJsonFactory = _$ArticleFromJson;
+
+  factory Article.fromJson(Map<String, dynamic> json) =>
+      _$ArticleFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ArticleToJson(this);
 }

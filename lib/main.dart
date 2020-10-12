@@ -1,22 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:hot_news/main_navigator.dart';
+import 'package:get/get.dart';
+import 'package:hot_news/shared/root.bootstrap.dart';
+import 'package:hot_news/source/presentation/source_screen.dart';
+import 'package:logging/logging.dart';
 
 void main() {
+  _setupLogging();
+  bootsrtap();
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-
-  final MainNavigator _navigator = MainNavigator();
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      initialRoute: kRouteMain,
-      routes: _navigator.routes(),
+      home: SourceScreen(),
+      navigatorKey: Get.key,
     );
   }
+}
 
-
+void _setupLogging() {
+  Logger.root.level = Level.ALL;
+  Logger.root.onRecord.listen((rec) {
+    print('${rec.level.name}: ${rec.time}: ${rec.message}');
+  });
 }

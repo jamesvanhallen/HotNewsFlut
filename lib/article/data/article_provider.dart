@@ -1,36 +1,28 @@
-import 'dart:convert';
+import 'dart:developer';
 
+import 'package:chopper/chopper.dart';
 import 'package:hot_news/article/data/article.dart';
-import 'package:hot_news/constants/constants.dart';
-import 'package:http/http.dart' as http;
+import 'package:hot_news/article/data/article_response.dart';
+import 'package:hot_news/shared/root.dart';
 
 class ArticleProvider {
-
   Future<List<Article>> fetchArticles(
     String source,
     String apiKey,
     String order,
   ) async {
-    var queryParameters = {
-      'source': source,
-      'apiKey': apiKey,
-      'order': order,
-    };
-    var uri = Uri.https(kEndpoint, kEndpointArticles, queryParameters);
-    final response = await http.get(uri);
-
-    if (response.statusCode == kCode200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      var sourcesJsonObj = jsonDecode(response.body)['articles'] as List;
-
-      List<Article> sources =
-          sourcesJsonObj.map((tagJson) => Article.fromJson(tagJson)).toList();
-      return sources;
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load articles');
+    try {
+      Response<ArticleResponse> response =
+          await svc.newsApi.fetchArticles(source, apiKey, order);
+      if (response.isSuccessful) {
+        return response.body.articles;
+      } else {
+        throw ArgumentError(
+            'cannot load currencies, code is ${response.statusCode.toString()}');
+      }
+    } catch (e) {
+      log('error $e');
+      throw ArgumentError(' cannot load currencies, cause $e');
     }
   }
 }

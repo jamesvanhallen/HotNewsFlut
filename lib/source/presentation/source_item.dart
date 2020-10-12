@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:hot_news/constants/constants.dart';
+import 'package:hot_news/constants.dart';
 import 'package:hot_news/source/data/source.dart';
 
 class SourceItem extends StatelessWidget {

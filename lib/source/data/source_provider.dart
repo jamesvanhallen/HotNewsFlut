@@ -1,26 +1,24 @@
-import 'dart:convert';
+import 'dart:developer';
 
-import 'package:hot_news/constants/constants.dart';
+import 'package:chopper/chopper.dart';
+import 'package:hot_news/shared/root.dart';
 import 'package:hot_news/source/data/source.dart';
-import 'package:http/http.dart' as http;
+import 'package:hot_news/source/data/source_response.dart';
 
 class SourceProvider {
   Future<List<Source>> fetchSources() async {
-    var uri = Uri.https(kEndpoint, kEndpointSources);
-    final response = await http.get(uri);
+    try {
+      Response<SourceResponse> response = await svc.newsApi.fetchSources();
 
-    if (response.statusCode == kCode200) {
-      // If the server did return a 200 OK response,
-      // then parse the JSON.
-      var sourcesJsonObj = jsonDecode(response.body)['sources'] as List;
-
-      List<Source> sources =
-          sourcesJsonObj.map((tagJson) => Source.fromJson(tagJson)).toList();
-      return sources;
-    } else {
-      // If the server did not return a 200 OK response,
-      // then throw an exception.
-      throw Exception('Failed to load sources');
+      if (response.isSuccessful) {
+        return response.body.sources;
+      } else {
+        throw ArgumentError(
+            ' cannot load currencies, code is ${response.statusCode.toString()}');
+      }
+    } catch (e) {
+      log('error $e');
+      throw ArgumentError(' cannot load currencies, cause $e');
     }
   }
 }

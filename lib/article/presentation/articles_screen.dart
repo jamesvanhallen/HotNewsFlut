@@ -1,67 +1,60 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:hot_news/article/data/article.dart';
-import 'package:hot_news/article/data/article_provider.dart';
-import 'package:hot_news/constants/constants.dart';
+import 'package:hot_news/article/presentation/bloc/article_bloc.dart';
+import 'package:hot_news/article/presentation/bloc/article_bloc_state.dart';
+import 'package:hot_news/constants.dart';
 import 'package:hot_news/source/data/source.dart';
 
-import '../../main_navigator.dart';
 import 'article_item.dart';
+import 'bloc/article_bloc_event.dart';
 
 class ArticleScreen extends StatefulWidget {
+  final Source _source;
+
+  ArticleScreen(this._source);
+
   @override
   _ArticleScreenState createState() => _ArticleScreenState();
 }
 
 class _ArticleScreenState extends State<ArticleScreen> {
-  final ArticleProvider articleProvider = ArticleProvider();
-
-  Source _source;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _source = ModalRoute
-        .of(context)
-        .settings
-        .arguments;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_source.name),
+        title: Text(widget._source.name),
         backgroundColor: toolbarColor,
       ),
       body: SafeArea(
-        child: FutureBuilder<List<Article>>(
-          future: articleProvider.fetchArticles(
-            _source.id,
-            kApiKey,
-            _source.sortBysAvailable[0],
+          child: BlocProvider(
+        create: (_) => ArticleBloc()
+          ..add(
+            ArticleRequestListEvent(
+              widget._source.id,
+              widget._source.sortBysAvailable[0],
+            ),
           ),
-          builder: (BuildContext context,
-              AsyncSnapshot<List<Article>> snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: SpinKitThreeBounce(
-                  color: toolbarColor,
-                  size: 30,
-                ),
-              );
-            }
-            if (snapshot.data.isEmpty) {
-              return Center(
-                child: Text('data is empty'),
-              );
-            } else {
-              return displayItems(snapshot.data);
-            }
-          },
-        ),
-      ),
+        child:
+            BlocBuilder<ArticleBloc, ArticleState>(builder: (context, state) {
+          if (state is ArticleListSuccessState) {
+            return displayItems(state.articles);
+          }
+          if (state is ArticleListFailureState) {
+            return Center(
+              child: Text(state.errorMessage),
+            );
+          }
+          return Center(
+            child: SpinKitThreeBounce(
+              color: toolbarColor,
+              size: 30,
+            ),
+          );
+        }),
+      )),
     );
   }
 
@@ -73,13 +66,10 @@ class _ArticleScreenState extends State<ArticleScreen> {
       itemBuilder: (context, index) {
         return GestureDetector(
           child: ArticleItem(articles[index]),
-          onTap: () =>
-          {
-            Navigator.pushNamed(
-              context,
-              kRouteWebArticle,
-              arguments: articles[index],
-            ),
+          onTap: () => {
+            context
+                .bloc<ArticleBloc>()
+                .add(ArticleChosenEvent(articles[index])),
           },
         );
       },
